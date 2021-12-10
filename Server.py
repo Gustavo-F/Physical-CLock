@@ -9,6 +9,8 @@ def worker_thread(client_socket):
     data = client_socket.recv(1024)
     data = data.decode().split('\r\n')[-1]
 
+    status_code = '200 OK'
+
     try:
         time_dict = {
             'time_0': json.loads(data)['time_0'],
@@ -18,13 +20,27 @@ def worker_thread(client_socket):
         sleep(random.randint(5, 15))
         time_dict['time_2'] = datetime.now().time().strftime('%H:%M:%S')
         
+        response_data = json.dumps(time_dict)
     except:
-        print('qual foi?')
+        status_code = '400 Bad Request'
+        response_data = json.dumps({'message': 'Error!'})
 
+    try:
+        response = (
+            f'HTTP/1.1 {status_code}\n'
+            f'Content-Type: application/json\n\n'
+            f'{response_data}'
+        ).encode()
+
+        client_socket.send(response)
+    except:
+        print('Coul not send reply.')
+
+    client_socket.shutdown(socket.SHUT_RDWR)    
 
 def Main():
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
-    server_socket.bind(('127.0.0.1', 8080)) 
+    server_socket.bind(('127.0.0.1', 8000)) 
     
     server_socket.listen() 
     print('Server initialized...')
