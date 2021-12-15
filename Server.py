@@ -10,15 +10,16 @@ def worker_thread(client_socket):
     data = data.decode().split('\r\n')[-1]
 
     status_code = '200 OK'
+    format = '%Y-%m-%d %H:%M:%S'
 
     try:
         time_dict = {
             'time_0': json.loads(data)['time_0'],
-            'time_1': datetime.now().time().strftime('%H:%M:%S'),
+            'time_1': datetime.now().strftime(format),
         }
 
         sleep(random.randint(5, 15))
-        time_dict['time_2'] = datetime.now().time().strftime('%H:%M:%S')
+        time_dict['time_2'] = datetime.now().strftime(format)
         
         response_data = json.dumps(time_dict)
     except:
