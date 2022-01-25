@@ -21,21 +21,23 @@ response = requests.get('http://127.0.0.1:8000', json=time_dict)
 time_dict = json.loads(response.content.decode())
 
 
-for time_key in time_dict:
+for index, time_key in enumerate(time_dict):
     splited_date, splited_time = time_dict[time_key].split(' ')
 
     year, month, day = splited_date.split('-')
     hour, minute, second = splited_time.split(':')
 
     time_dict[time_key] = datetime(int(year), int(month), int(day), int(hour), int(minute), int(second))
+    print(f'Time[{index}]: {time_dict[time_key].strftime("%H:%M:%S")}')
 
 
 time_dict['time_3'] = time_dict['time_0'] + timedelta(seconds=5)
+
 lag_time = (
     (time_dict['time_1'] - time_dict['time_0']) + (time_dict['time_2'] - time_dict['time_3'])
 ) / 2
 
-time_synchronized = time_dict['time_0'] + timedelta(seconds=lag_time.seconds)
+time_synchronized = time_dict['time_3'] + timedelta(seconds=lag_time.seconds)
 
 print(f'Defasagem => {lag_time}')
-print(f'Horário Ajustado => {time_synchronized}')
+print(f'Horário Ajustado => {time_synchronized.strftime("%H:%M:%S")}')
